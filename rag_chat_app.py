@@ -13,6 +13,52 @@
 
 import os, json, numpy as np, streamlit as st
 from pathlib import Path
+# --- RAG index loader (cloud-friendly) ---
+from pathlib import Path
+import pickle
+import streamlit as st
+import subprocess
+
+def _faiss_available():
+    try:
+        import faiss  # noqa
+        return True
+    except Exception:
+        return False
+
+def load_index_and_meta():
+    Path("data").mkdir(parents=True, exist_ok=True)
+    sk_path    = Path("data/rag_index.sk.pkl")
+    meta_path  = Path("data/rag_meta.jsonl")
+    faiss_path = Path("data/rag_index.faiss")
+
+    # Prefer sklearn (portable)
+    if sk_path.exists() and meta_path.exists():
+        with open(sk_path, "rb") as f:
+            nn = pickle.load(f)
+        meta = [line.rstrip("\n") for line in meta_path.open("r", encoding="utf-8")]
+        return ("sklearn", nn, meta)
+
+    # Try FAISS only if module is present
+    if faiss_path.exists() and _faiss_available():
+        import faiss, numpy as np  # noqa
+        # If you saved FAISS with faiss.write_index, load here:
+        idx = faiss.read_index(str(faiss_path))
+        meta = [line.rstrip("\n") for line in meta_path.open("r", encoding="utf-8")] if meta_path.exists() else []
+        return ("faiss", idx, meta)
+
+    return (None, None, None)
+
+backend, index, meta = load_index_and_meta()
+if backend is None:
+    st.warning("No RAG index yet.")
+    if st.button("Build index now"):
+        with st.spinner("Building sklearn index from highlights…"):
+            # Build over highlights so we don't need the DB in the cloud
+            subprocess.run(["python", "rag_build_index.py", "--since", "30d", "--provider", "local", "--use-highlights"], check=True)
+        st.success("Index built. Reloading…")
+        st.rerun()
+    st.stop()
 
 st.set_page_config(page_title="FOBOH – RAG Chat", layout="wide")
 st.title("FOBOH – RAG Chat over Articles")
