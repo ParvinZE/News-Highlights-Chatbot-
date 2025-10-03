@@ -86,7 +86,7 @@ python -m streamlit run rag_chat_app.py
 
 ---
 
-## 🧠 Summarization (optional)
+## 🧠 Summarization
 
 Local models (no API key):
 ```bash
