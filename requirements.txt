@@ -1,0 +1,30 @@
+# Core ingestion & parsing
+feedparser>=6.0.11
+requests>=2.31.0
+beautifulsoup4>=4.12.2
+python-dateutil>=2.8.2
+
+# UI
+streamlit>=1.36.0
+
+# Data & utilities
+numpy>=1.24.0
+pandas>=2.0.0
+joblib>=1.3.0
+
+# Retrieval (keyword + semantic)
+rank-bm25>=0.2.2
+scikit-learn>=1.3.0
+sentence-transformers>=2.2.2
+
+# Local LLM summarization
+transformers>=4.40.0
+sentencepiece>=0.1.99
+torch>=2.1.0
+
+# Optional: OpenAI client (only if you use provider=openai)
+openai>=1.0.0
+
+# ----- Optional, faster vector index (commented out by default) -----
+# If the line below fails on your platform, leave it commented.
+# faiss-cpu>=1.7.4

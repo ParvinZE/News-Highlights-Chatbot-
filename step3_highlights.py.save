@@ -1,0 +1,111 @@
+cd "/Users/pzarei/Library/CloudStorage/OneDrive-TheUniversityofMelbourne/FOBOH/foboh_news_full_fixed"
+
+cat > step3_highlights.py <<'PY'
+import argparse, json, math
+from datetime import datetime, timezone
+from pathlib import Path
+from db import get_conn, init_db
+from config import SUPPORTED_CATEGORIES, KEYWORDS
+from dateutil import parser as dtp
+from email.utils import parsedate_to_datetime
+
+def _parse_dt_any(value: str | None):
+    if not value:
+        return None
+    try:
+        return dtp.parse(value)
+    except Exception:
+        try:
+            return parsedate_to_datetime(value)
+        except Exception:
+            return None
+
+def recency_weight(published_iso: str | None, half_life_hours: float = 48.0) -> float:
+    if not published_iso:
+        return 0.8
+    dt = _parse_dt_any(published_iso)
+    if not dt:
+        return 0.8
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    age_h = (datetime.now(timezone.utc) - dt).total_seconds() / 3600.0
+    if age_h < 0:
+        age_h = 0.0
+    return 0.5 ** (age_h / half_life_hours)
+
+def keyword_hits(text: str) -> int:
+    t = (text or "").lower()
+    return sum(1 for k in KEYWORDS if k in t)
+
+def build_highlights(categories, since: str | None, topk: int):
+    init_db()
+    conn = get_conn()
+    cur = conn.cursor()
+    combined = {}
+
+    for cat in categories:
+        q = """
+SELECT cluster_id, id, title, summary_abs, source_domain, published_at, dedup_canonical
+FROM articles
+WHERE category_final=? AND cluster_id IS NOT NULL
+"""
+        params = [cat]
+        if since:
+            q += " AND (published_at IS NULL OR published_at >= ?)"
+            params.append(since)
+        q += " ORDER BY cluster_id ASC, published_at DESC"
+
+        rows = cur.execute(q, params).fetchall()
+        clusters = {}
+        for (cid, aid, title, summary, src_dom, pub, is_canon) in rows:
+            clusters.setdefault(cid, []).append({
+                "article_id": aid,
+                "title": title or "",
+                "summary": summary or "",
+                "src": src_dom or "",
+                "pub": pub,
+                "canon": bool(is_canon),
+            })
+
+        ranked = []
+        for cid, items in clusters.items():
+            sources = len({it['src'] for it in items if it['src']})
+            size = len(items)
+            top = next((it for it in items if it['canon']), items[0])
+            text = f"{top['title']} {top['summary']}"
+            kw = keyword_hits(text)
+            rw = recency_weight(top['pub'])
+            score = 2.0 * math.log1p(sources) + 1.0 * math.log1p(size) + 1.5 * kw + 2.0 * rw
+            ranked.append({
+                "cluster_id": cid,
+                "top_article_id": top['article_id'],
+                "title": top['title'],
+                "summary": top['summary'],
+                "freq_sources": sources,
+                "cluster_size": size,
+                "keywords": kw,
+                "recency_weight": rw,
+                "score": score,
+            })
+
+        ranked.sort(key=lambda x: x["score"], reverse=True)
+
+        today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        for it in ranked[:topk]:
+            cur.execute("""
+INSERT OR REPLACE INTO highlights
+(category, cluster_id, top_article_id, score, freq_sources, cluster_size, keywords, created_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+""", (cat, it['cluster_id'], it['top_article_id'], float(it['score']),
+      int(it['freq_sources']), int(it['cluster_size']), int(it['keywords']), today_str))
+        conn.commit()
+        combined[cat] = ranked[:topk]
+
+    outp = Path(__file__).resolve().parent / "data" / "highlights.json"
+    outp.parent.mkdir(parents=True, exist_ok=True)
+    outp.write_text(json.dumps(combined, indent=2))
+    conn.close()
+    print(f"[step3] Exported combined highlights to {outp}")
+    return combined
+
+if __name__ == "__main__"

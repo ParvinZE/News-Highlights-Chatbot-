@@ -1,0 +1,38 @@
+[
+  {
+    "title": "Reserve Bank signals cautious approach to rate cuts",
+    "author": "Jane Smith",
+    "source": "Sample/ABC Business",
+    "url": "https://example.com/finance/rate-cuts",
+    "category_feed": "finance",
+    "summary_raw": "The RBA indicates it will consider easing if inflation keeps cooling, but remains data-dependent.",
+    "published": "Sat, 20 Sep 2025 09:57:36 +0000"
+  },
+  {
+    "title": "Socceroos triumph in friendly ahead of qualifiers",
+    "author": "Alex Doe",
+    "source": "Sample/ABC Sport",
+    "url": "https://example.com/sports/socceroos-win",
+    "category_feed": "sports",
+    "summary_raw": "Australia notch a 2-0 win with a dominant second half performance.",
+    "published": "Sun, 21 Sep 2025 09:57:36 +0000"
+  },
+  {
+    "title": "Film festival opens with acclaimed indie drama",
+    "author": "Chris Lee",
+    "source": "Sample/ABC Entertainment",
+    "url": "https://example.com/entertainment/film-festival",
+    "category_feed": "entertainment",
+    "summary_raw": "The opening night drew large crowds as critics praised the director's latest work.",
+    "published": "Fri, 19 Sep 2025 09:57:36 +0000"
+  },
+  {
+    "title": "Global markets steady as investors digest earnings",
+    "author": "Reuters Staff",
+    "source": "Sample/Reuters Business",
+    "url": "https://example.com/finance/markets-steady",
+    "category_feed": "finance",
+    "summary_raw": "Stocks were mostly flat with mixed corporate results across sectors.",
+    "published": "Wed, 17 Sep 2025 09:57:36 +0000"
+  }
+]
