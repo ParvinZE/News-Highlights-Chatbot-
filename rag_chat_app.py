@@ -11,45 +11,115 @@
 #   data/rag_index.faiss  (or data/rag_index.sk.pkl if using sklearn fallback)
 #   data/rag_meta.jsonl   (one JSON per line; includes text_model if you used latest builder)
 
-import os, json, numpy as np, streamlit as st
+# --- Inline, cloud-friendly RAG index loader/builder ---
 from pathlib import Path
-# --- RAG index loader (cloud-friendly) ---
-from pathlib import Path
-import pickle
+import os, json, pickle
 import streamlit as st
-import subprocess
 
-def _faiss_available():
-    try:
-        import faiss  # noqa
-        return True
-    except Exception:
-        return False
+DATA_DIR = Path("data")
+SK_PATH   = DATA_DIR / "rag_index.sk.pkl"
+META_PATH = DATA_DIR / "rag_meta.jsonl"
+HIGHLIGHTS_JSON = DATA_DIR / "highlights.json"
 
-def load_index_and_meta():
-    Path("data").mkdir(parents=True, exist_ok=True)
-    sk_path    = Path("data/rag_index.sk.pkl")
-    meta_path  = Path("data/rag_meta.jsonl")
-    faiss_path = Path("data/rag_index.faiss")
+@st.cache_resource
+def get_embedder():
+    # small, CPU-friendly embedding model
+    os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+    from sentence_transformers import SentenceTransformer
+    return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
-    # Prefer sklearn (portable)
-    if sk_path.exists() and meta_path.exists():
-        with open(sk_path, "rb") as f:
+def _load_sklearn_index():
+    if SK_PATH.exists() and META_PATH.exists():
+        with open(SK_PATH, "rb") as f:
             nn = pickle.load(f)
-        meta = [line.rstrip("\n") for line in meta_path.open("r", encoding="utf-8")]
-        return ("sklearn", nn, meta)
+        with META_PATH.open("r", encoding="utf-8") as f:
+            meta = [json.loads(line) for line in f]
+        return nn, meta
+    return None, None
 
-    # Try FAISS only if module is present
-    if faiss_path.exists() and _faiss_available():
-        import faiss, numpy as np  # noqa
-        # If you saved FAISS with faiss.write_index, load here:
-        idx = faiss.read_index(str(faiss_path))
-        meta = [line.rstrip("\n") for line in meta_path.open("r", encoding="utf-8")] if meta_path.exists() else []
-        return ("faiss", idx, meta)
+def _save_sklearn_index(nn, meta):
+    with open(SK_PATH, "wb") as f:
+        pickle.dump(nn, f)
+    with META_PATH.open("w", encoding="utf-8") as f:
+        for m in meta:
+            f.write(json.dumps(m, ensure_ascii=False) + "\n")
 
-    return (None, None, None)
+def build_index_inline_from_highlights():
+    """Build a sklearn NearestNeighbors index from data/highlights.json (no DB, no subprocess)."""
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    if not HIGHLIGHTS_JSON.exists():
+        st.error("data/highlights.json not found. Run step3_highlights.py locally and commit it, or generate it in the cloud.")
+        st.stop()
 
-backend, index, meta = load_index_and_meta()
+    data = json.loads(HIGHLIGHTS_JSON.read_text(encoding="utf-8"))
+    records = []  # (text, meta)
+    for cat, items in (data or {}).items():
+        for it in items:
+            text = f"{it.get('title','')} {it.get('summary','')}".strip()
+            if not text:
+                continue
+            meta = {
+                "category": cat,
+                "title": it.get("title",""),
+                "summary": it.get("summary",""),
+                "url": it.get("url",""),
+                "score": it.get("score_total") or it.get("score") or 0.0,
+                "freq_sources": it.get("freq_sources"),
+                "cluster_size": it.get("cluster_size"),
+                "recency_weight": it.get("recency_weight"),
+            }
+            records.append((text, meta))
+
+    if not records:
+        st.error("highlights.json has no items. Re-run step3_highlights.py to populate it.")
+        st.stop()
+
+    # Embed
+    embedder = get_embedder()
+    texts = [t for t, _ in records]
+    X = embedder.encode(texts, normalize_embeddings=True, show_progress_bar=False)
+
+    # sklearn index (cosine via metric='cosine')
+    from sklearn.neighbors import NearestNeighbors
+    nn = NearestNeighbors(metric="cosine")
+    nn.fit(X)
+
+    meta = [m for _, m in records]
+    _save_sklearn_index(nn, meta)
+    return nn, meta
+
+def load_or_build_index():
+    # Prefer sklearn files if present (portable on Streamlit Cloud)
+    nn, meta = _load_sklearn_index()
+    if nn is not None:
+        return "sklearn", nn, meta
+
+    # If no index, offer to build inline (no subprocess)
+    st.warning("No RAG index yet.")
+    if st.button("Build index now"):
+        with st.spinner("Building sklearn index from highlights…"):
+            nn, meta = build_index_inline_from_highlights()
+        st.success("Index built. Reloading…")
+        st.rerun()
+    st.stop()
+
+# Call this once near the top of your app
+BACKEND, INDEX, META = load_or_build_index()
+
+def search_query(query: str, topk: int = 5):
+    import numpy as np
+    embedder = get_embedder()
+    qv = embedder.encode([query], normalize_embeddings=True)
+    # sklearn NearestNeighbors returns distances (cosine distance),
+    # so similarity = 1 - distance
+    distances, indices = INDEX.kneighbors(qv, n_neighbors=min(topk, len(META)))
+    hits = []
+    for rank, (d, idx) in enumerate(zip(distances[0], indices[0]), start=1):
+        m = META[idx]
+        sim = float(1.0 - d)
+        hits.append({"rank": rank, "similarity": sim, **m})
+    return hits
+
 if backend is None:
     st.warning("No RAG index yet.")
     if st.button("Build index now"):
