@@ -15,11 +15,11 @@
       "score_src_domains": 1.3862943611198906,
       "score_cluster_size": 0.6931471805599453,
       "score_keywords": 1.0,
-      "score_recency": 1.9315227146041103,
-      "score": 5.0109642562839465,
-      "score_total": 5.0109642562839465,
+      "score_recency": 1.8492712711977628,
+      "score": 4.928712812877599,
+      "score_total": 4.928712812877599,
       "keywords": 1,
-      "recency_weight": 0.9657613573020551
+      "recency_weight": 0.9246356355988814
     },
     {
       "cluster_id": 1000624,
@@ -36,11 +36,11 @@
       "score_src_domains": 1.3862943611198906,
       "score_cluster_size": 0.6931471805599453,
       "score_keywords": 1.0,
-      "score_recency": 1.8740987526006538,
-      "score": 4.95354029428049,
-      "score_total": 4.95354029428049,
+      "score_recency": 1.79429263590925,
+      "score": 4.8737341775890854,
+      "score_total": 4.8737341775890854,
       "keywords": 1,
-      "recency_weight": 0.9370493763003269
+      "recency_weight": 0.897146317954625
     },
     {
       "cluster_id": 1000633,
@@ -57,11 +57,11 @@
       "score_src_domains": 1.3862943611198906,
       "score_cluster_size": 0.6931471805599453,
       "score_keywords": 1.0,
-      "score_recency": 1.8356187120053205,
-      "score": 4.915060253685156,
-      "score_total": 4.915060253685156,
+      "score_recency": 1.757451219044416,
+      "score": 4.836892760724252,
+      "score_total": 4.836892760724252,
       "keywords": 1,
-      "recency_weight": 0.9178093560026602
+      "recency_weight": 0.878725609522208
     },
     {
       "cluster_id": 1000359,
@@ -78,11 +78,11 @@
       "score_src_domains": 1.3862943611198906,
       "score_cluster_size": 0.6931471805599453,
       "score_keywords": 1.0,
-      "score_recency": 1.3835038012678647,
-      "score": 4.4629453429477,
-      "score_total": 4.4629453429477,
+      "score_recency": 1.3245890477668818,
+      "score": 4.404030589446718,
+      "score_total": 4.404030589446718,
       "keywords": 1,
-      "recency_weight": 0.6917519006339323
+      "recency_weight": 0.6622945238834409
     },
     {
       "cluster_id": 1000659,
@@ -99,11 +99,11 @@
       "score_src_domains": 1.3862943611198906,
       "score_cluster_size": 0.6931471805599453,
       "score_keywords": 0.0,
-      "score_recency": 1.9760594785658043,
-      "score": 4.05550102024564,
-      "score_total": 4.05550102024564,
+      "score_recency": 1.8919114938328985,
+      "score": 3.971353035512734,
+      "score_total": 3.971353035512734,
       "keywords": 0,
-      "recency_weight": 0.9880297392829022
+      "recency_weight": 0.9459557469164492
     }
   ],
   "finance": [
@@ -122,11 +122,11 @@
       "score_src_domains": 1.3862943611198906,
       "score_cluster_size": 0.6931471805599453,
       "score_keywords": 0.0,
-      "score_recency": 0.022403289321348215,
-      "score": 2.101844831001184,
-      "score_total": 2.101844831001184,
+      "score_recency": 0.021449273675584794,
+      "score": 2.1008908153554207,
+      "score_total": 2.1008908153554207,
       "keywords": 0,
-      "recency_weight": 0.011201644660674108
+      "recency_weight": 0.010724636837792397
     },
     {
       "cluster_id": 1000004,
@@ -143,11 +143,11 @@
       "score_src_domains": 1.3862943611198906,
       "score_cluster_size": 0.6931471805599453,
       "score_keywords": 0.0,
-      "score_recency": 0.007920758899051574,
-      "score": 2.0873623005788873,
-      "score_total": 2.0873623005788873,
+      "score_recency": 0.007583463432883896,
+      "score": 2.0870250051127197,
+      "score_total": 2.0870250051127197,
       "keywords": 0,
-      "recency_weight": 0.003960379449525787
+      "recency_weight": 0.003791731716441948
     }
   ],
   "sports": [
@@ -166,11 +166,11 @@
       "score_src_domains": 1.3862943611198906,
       "score_cluster_size": 0.6931471805599453,
       "score_keywords": 1.0,
-      "score_recency": 1.8107756913148716,
-      "score": 4.890217232994708,
-      "score_total": 4.890217232994708,
+      "score_recency": 1.7336661067324737,
+      "score": 4.813107648412309,
+      "score_total": 4.813107648412309,
       "keywords": 1,
-      "recency_weight": 0.9053878456574358
+      "recency_weight": 0.8668330533662368
     },
     {
       "cluster_id": 1000656,
@@ -187,11 +187,11 @@
       "score_src_domains": 1.3862943611198906,
       "score_cluster_size": 0.6931471805599453,
       "score_keywords": 0.0,
-      "score_recency": 1.8294367160958112,
-      "score": 3.9088782577756467,
-      "score_total": 3.9088782577756467,
+      "score_recency": 1.7515324754716974,
+      "score": 3.830974017151533,
+      "score_total": 3.830974017151533,
       "keywords": 0,
-      "recency_weight": 0.9147183580479056
+      "recency_weight": 0.8757662377358487
     },
     {
       "cluster_id": 1000636,
@@ -208,11 +208,11 @@
       "score_src_domains": 1.3862943611198906,
       "score_cluster_size": 0.6931471805599453,
       "score_keywords": 0.0,
-      "score_recency": 1.800057548123814,
-      "score": 3.87949908980365,
-      "score_total": 3.87949908980365,
+      "score_recency": 1.723404382024287,
+      "score": 3.8028459237041226,
+      "score_total": 3.8028459237041226,
       "keywords": 0,
-      "recency_weight": 0.900028774061907
+      "recency_weight": 0.8617021910121435
     },
     {
       "cluster_id": 1000639,
@@ -229,11 +229,11 @@
       "score_src_domains": 1.3862943611198906,
       "score_cluster_size": 0.6931471805599453,
       "score_keywords": 0.0,
-      "score_recency": 1.795629607439541,
-      "score": 3.8750711491193766,
-      "score_total": 3.8750711491193766,
+      "score_recency": 1.71916499958112,
+      "score": 3.7986065412609555,
+      "score_total": 3.7986065412609555,
       "keywords": 0,
-      "recency_weight": 0.8978148037197705
+      "recency_weight": 0.85958249979056
     },
     {
       "cluster_id": 1000650,
@@ -250,11 +250,11 @@
       "score_src_domains": 1.3862943611198906,
       "score_cluster_size": 0.6931471805599453,
       "score_keywords": 0.0,
-      "score_recency": 1.7887067362224711,
-      "score": 3.868148277902307,
-      "score_total": 3.868148277902307,
+      "score_recency": 1.7125369300622089,
+      "score": 3.791978471742045,
+      "score_total": 3.791978471742045,
       "keywords": 0,
-      "recency_weight": 0.8943533681112356
+      "recency_weight": 0.8562684650311044
     }
   ],
   "entertainment": [
@@ -273,11 +273,11 @@
       "score_src_domains": 1.3862943611198906,
       "score_cluster_size": 0.6931471805599453,
       "score_keywords": 0.0,
-      "score_recency": 0.015841517711936717,
-      "score": 2.0952830593917726,
-      "score_total": 2.0952830593917726,
+      "score_recency": 0.015166926787529334,
+      "score": 2.094608468467365,
+      "score_total": 2.094608468467365,
       "keywords": 0,
-      "recency_weight": 0.007920758855968359
+      "recency_weight": 0.007583463393764667
     }
   ]
 }
